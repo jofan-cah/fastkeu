@@ -574,8 +574,8 @@ class DocumentController extends Controller
                 );
             }
 
-            // Generate QR Code URL untuk validasi
-            $validationUrl = url('/validate/' . urlencode($docNumber));
+            // Generate QR Code URL untuk validasi (pakai query parameter)
+            $validationUrl = url('/validate?doc=' . urlencode($docNumber));
             $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
 
             // Prepare data untuk PDF
@@ -804,8 +804,8 @@ class DocumentController extends Controller
             // Generate nomor
             $docNumber = $this->generateDocumentNumber($docType);
 
-            // Generate QR Code URL untuk validasi
-            $validationUrl = url('/validate/' . urlencode($docNumber));
+            // Generate QR Code URL untuk validasi (pakai query parameter)
+            $validationUrl = url('/validate?doc=' . urlencode($docNumber));
             $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
 
             // Prepare data
@@ -941,8 +941,8 @@ class DocumentController extends Controller
 
             $docNumber = $this->generateDocumentNumber($docType);
 
-            // Generate QR Code URL untuk validasi
-            $validationUrl = url('/validate/' . urlencode($docNumber));
+            // Generate QR Code URL untuk validasi (pakai query parameter)
+            $validationUrl = url('/validate?doc=' . urlencode($docNumber));
             $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
 
             // Prepare data
@@ -1081,8 +1081,8 @@ class DocumentController extends Controller
 
             $docNumber = $this->generateDocumentNumber($docType);
 
-            // Generate QR Code URL untuk validasi
-            $validationUrl = url('/validate/' . urlencode($docNumber));
+            // Generate QR Code URL untuk validasi (pakai query parameter)
+            $validationUrl = url('/validate?doc=' . urlencode($docNumber));
             $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
 
             // Prepare data
@@ -1164,25 +1164,63 @@ class DocumentController extends Controller
 
     /**
      * Public: Validasi Dokumen via QR Code
+     * ⚠️ SECURITY: Protected against SQL Injection, XSS, and abuse
      */
-    public function validateDocument($docNumber)
+    public function validateDocument(Request $request)
     {
         try {
-            // Decode jika nomor dokumen di-encode
-            $docNumber = urldecode($docNumber);
+            // ✅ SECURITY: Validasi input dengan rules ketat
+            $validator = Validator::make($request->all(), [
+                'doc' => [
+                    'required',
+                    'string',
+                    'max:100', // Limit panjang untuk prevent overflow
+                    'regex:/^[0-9A-Z\.\-\/]+$/i' // Hanya alphanumeric, titik, strip, slash
+                ]
+            ], [
+                'doc.required' => 'Nomor dokumen wajib diisi',
+                'doc.regex' => 'Format nomor dokumen tidak valid',
+                'doc.max' => 'Nomor dokumen terlalu panjang'
+            ]);
 
-            // Cari dokumen berdasarkan nomor
+            if ($validator->fails()) {
+                return view('documents.validate', [
+                    'valid' => false,
+                    'message' => 'Format nomor dokumen tidak valid',
+                    'docNumber' => 'INVALID'
+                ]);
+            }
+
+            // ✅ SECURITY: Sanitize input (trim whitespace)
+            $docNumber = trim($request->query('doc'));
+
+            // ✅ SECURITY: Gunakan Eloquent dengan parameter binding (auto-escape)
+            // Laravel Eloquent otomatis prevent SQL Injection dengan prepared statements
             $document = Document::where('doc_number', $docNumber)
                 ->with(['documentType', 'creator'])
                 ->first();
 
             if (!$document) {
+                // ✅ SECURITY: Log attempt untuk monitoring
+                Log::warning('Document validation failed', [
+                    'doc_number' => $docNumber,
+                    'ip' => $request->ip(),
+                    'user_agent' => $request->userAgent()
+                ]);
+
                 return view('documents.validate', [
                     'valid' => false,
-                    'message' => 'Dokumen tidak ditemukan',
-                    'docNumber' => $docNumber
+                    'message' => 'Dokumen tidak ditemukan di database',
+                    'docNumber' => $docNumber // Blade {{ }} auto-escape untuk XSS protection
                 ]);
             }
+
+            // ✅ SECURITY: Log successful validation
+            Log::info('Document validated successfully', [
+                'doc_number' => $docNumber,
+                'doc_id' => $document->id,
+                'ip' => $request->ip()
+            ]);
 
             // Dokumen valid
             return view('documents.validate', [
@@ -1192,12 +1230,16 @@ class DocumentController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error validating document: ' . $e->getMessage());
+            // ✅ SECURITY: Log error tanpa expose sensitive info
+            Log::error('Error validating document', [
+                'error' => $e->getMessage(),
+                'ip' => $request->ip()
+            ]);
 
             return view('documents.validate', [
                 'valid' => false,
                 'message' => 'Terjadi kesalahan saat validasi',
-                'docNumber' => $docNumber ?? 'N/A'
+                'docNumber' => 'ERROR'
             ]);
         }
     }

@@ -12,7 +12,10 @@ Route::get('/', function () {
 });
 
 // Public Route - Validasi Dokumen (Tanpa Login)
-Route::get('/validate/{docNumber}', [DocumentController::class, 'validateDocument'])->name('validateDocument');
+// ⚠️ SECURITY: Rate limiting 60 requests per minute untuk prevent abuse
+Route::get('/validate', [DocumentController::class, 'validateDocument'])
+    ->middleware('throttle:60,1')
+    ->name('validateDocument');
 
 
 
