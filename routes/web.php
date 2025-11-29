@@ -11,6 +11,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public Route - Validasi Dokumen (Tanpa Login)
+Route::get('/validate/{docNumber}', [DocumentController::class, 'validateDocument'])->name('validateDocument');
+
 
 
 Route::middleware('guest')->group(function () {

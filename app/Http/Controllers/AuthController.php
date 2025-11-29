@@ -29,11 +29,10 @@ class AuthController extends Controller
     {
         // Validasi
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'nip' => 'required|string',
             'password' => 'required',
         ], [
-            'email.required' => 'Email wajib diisi',
-            'email.email' => 'Format email tidak valid',
+            'nip.required' => 'NIP wajib diisi',
             'password.required' => 'Password wajib diisi',
         ]);
 
@@ -41,21 +40,21 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return redirect()->back()
             ->withErrors($validator)
-            ->withInput($request->only('email', 'remember'));
+            ->withInput($request->only('nip', 'remember'));
         }
 
         // Ambil credentials
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('nip', 'password');
         $remember = $request->has('remember');
 
         // Cek user aktif
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('nip', $request->nip)->first();
         // dd($validator);
 
         if ($user && !$user->is_active) {
             return redirect()->back()
-                ->withErrors(['email' => 'Akun Anda tidak aktif. Hubungi administrator.'])
-                ->withInput($request->only('email'));
+                ->withErrors(['nip' => 'Akun Anda tidak aktif. Hubungi administrator.'])
+                ->withInput($request->only('nip'));
         }
 
         // Attempt login
@@ -72,8 +71,8 @@ class AuthController extends Controller
 
         // Login gagal
         return redirect()->back()
-            ->withErrors(['email' => 'Email atau password salah.'])
-            ->withInput($request->only('email', 'remember'));
+            ->withErrors(['nip' => 'NIP atau password salah.'])
+            ->withInput($request->only('nip', 'remember'));
     }
 
     /**

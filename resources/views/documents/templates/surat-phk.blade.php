@@ -170,6 +170,27 @@
         .page-break {
             page-break-before: always;
         }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .qr-section img {
+            width: 90px;
+            height: 90px;
+            display: block;
+            margin: 0 auto 8px auto;
+        }
+
+        .qr-section .qr-label {
+            font-size: 8pt;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -302,7 +323,9 @@
                     <td style="width: 50%; text-align: center; vertical-align: top; border: none;">
                         <div style="margin-bottom: 5px;">Jabatan</div>
                         <div style="margin-bottom: 5px;">Tanda Tangan</div>
-                        <div style="height: 60px;"></div>
+                        <div style="height: 60px;">
+                            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
+                        </div>
                         <div style="border-bottom: 1px solid #000; display: inline-block; min-width: 150px; padding-bottom: 2px;">Nama Perwakilan Serikat Pekerja/</div>
                         <div>Perwakilan pekerja yang di PHK</div>
                     </td>
@@ -310,7 +333,7 @@
                         <div style="margin-bottom: 5px;">Direktur</div>
                         <div style="margin-bottom: 5px;">PT Jaringan FiberOne Indonesia</div>
                         <div style="height: 60px;">
-                            <img src="{{ public_path('images/ttd_arief.png') }}" alt="TTD" style="max-height: 50px;">
+                           <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
                         </div>
                         <div style="border-bottom: 1px solid #000; display: inline-block; min-width: 150px; padding-bottom: 2px; font-weight: bold;">{{ $director_name }}</div>
                     </td>

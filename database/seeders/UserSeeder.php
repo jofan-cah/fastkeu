@@ -14,6 +14,7 @@ class UserSeeder extends Seeder
         // Admin
         $admin = User::create([
             'user_id' => 'USR-' . date('ymd') . '-001',
+            'nip' => '199001012020011001',
             'full_name' => 'Administrator',
             'email' => 'admin@fastkeu.id',
             'password' => Hash::make('admin123'),
@@ -26,6 +27,7 @@ class UserSeeder extends Seeder
         // Finance
         $finance = User::create([
             'user_id' => 'USR-' . date('ymd') . '-002',
+            'nip' => '199002022020022002',
             'full_name' => 'Finance Staff',
             'email' => 'finance@fastkeu.id',
             'password' => Hash::make('finance123'),
@@ -38,6 +40,7 @@ class UserSeeder extends Seeder
         // CS
         $cs = User::create([
             'user_id' => 'USR-' . date('ymd') . '-003',
+            'nip' => '199003032020033003',
             'full_name' => 'Customer Service',
             'email' => 'cs@fastkeu.id',
             'password' => Hash::make('cs123'),
@@ -48,8 +51,8 @@ class UserSeeder extends Seeder
         $cs->roles()->attach(Role::where('role_name', 'CS')->first()->role_id);
 
         $this->command->info('✅ Users created:');
-        $this->command->info('   - admin@fastkeu.id / admin123');
-        $this->command->info('   - finance@fastkeu.id / finance123');
-        $this->command->info('   - cs@fastkeu.id / cs123');
+        $this->command->info('   - NIP: 199001012020011001 (Admin) / admin123');
+        $this->command->info('   - NIP: 199002022020022002 (Finance) / finance123');
+        $this->command->info('   - NIP: 199003032020033003 (CS) / cs123');
     }
 }

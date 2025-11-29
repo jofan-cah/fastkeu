@@ -201,6 +201,27 @@
             font-size: 9pt;
             margin-top: 2px;
         }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .qr-section img {
+            width: 85px;
+            height: 85px;
+            display: block;
+            margin: 0 auto 6px auto;
+        }
+
+        .qr-section .qr-label {
+            font-size: 7pt;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -344,7 +365,7 @@
                 <div class="title-sig">PIHAK PERTAMA</div>
                 <div class="company">PT. JARINGAN FIBERONE INDONESIA</div>
                 <div class="sign-space">
-                    <img src="{{ public_path('images/ttd_ayum.png') }}" alt="TTD">
+                    <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
                 </div>
                 <div class="name">Ayu Mutiara A.</div>
                 <div class="position">Administrasi</div>
@@ -353,7 +374,9 @@
             <div class="signature-box">
                 <div class="title-sig">PIHAK KEDUA</div>
                 <div class="company">PELANGGAN</div>
-                <div class="sign-space"></div>
+                <div class="sign-space">
+                     <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
+                </div>
                 <div class="name">{{ $borrower_name }}</div>
                 <div class="position">{{ $borrower_id }}</div>
             </div>

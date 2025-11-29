@@ -45,19 +45,19 @@
             <form method="POST" action="{{ route('login.post') }}">
                 @csrf
 
-                <!-- Email -->
+                <!-- NIP -->
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email <span class="text-red-500">*</span>
+                    <label for="nip" class="block text-sm font-medium text-gray-700 mb-2">
+                        NIP <span class="text-red-500">*</span>
                     </label>
-                    <input id="email"
-                           type="email"
-                           name="email"
-                           value="{{ old('email') }}"
+                    <input id="nip"
+                           type="text"
+                           name="nip"
+                           value="{{ old('nip') }}"
                            required
                            autofocus
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('email') border-red-500 @enderror"
-                           placeholder="admin@fastkeu.id">
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('nip') border-red-500 @enderror"
+                           placeholder="Masukkan NIP Anda">
                 </div>
 
                 <!-- Password -->
@@ -99,9 +99,9 @@
                     <i class='bx bx-info-circle'></i> Demo Account:
                 </p>
                 <div class="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 space-y-1">
-                    <p><strong>Admin:</strong> admin@fastkeu.id / admin123</p>
-                    <p><strong>Finance:</strong> finance@fastkeu.id / finance123</p>
-                    <p><strong>CS:</strong> cs@fastkeu.id / cs123</p>
+                    <p><strong>Admin:</strong> NIP: 199001012020011001 / admin123</p>
+                    <p><strong>Finance:</strong> NIP: 199002022020022002 / finance123</p>
+                    <p><strong>CS:</strong> NIP: 199003032020033003 / cs123</p>
                 </div>
             </div>
         </div>

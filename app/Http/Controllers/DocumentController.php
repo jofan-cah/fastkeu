@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class DocumentController extends Controller
 {
@@ -573,10 +574,15 @@ class DocumentController extends Controller
                 );
             }
 
+            // Generate QR Code URL untuk validasi
+            $validationUrl = url('/validate/' . urlencode($docNumber));
+            $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
+
             // Prepare data untuk PDF
             $data = [
                 'docNumber' => $docNumber,
                 'hariTanggal' => Carbon::parse($request->starting_billing)->translatedFormat('l, d F Y'),
+                'qrCode' => $qrCode,
                 'pihakPertama' => [
                     'nama' => 'Ayu Mutiara A.',
                     'jabatan' => 'Administrasi',
@@ -798,9 +804,14 @@ class DocumentController extends Controller
             // Generate nomor
             $docNumber = $this->generateDocumentNumber($docType);
 
+            // Generate QR Code URL untuk validasi
+            $validationUrl = url('/validate/' . urlencode($docNumber));
+            $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
+
             // Prepare data
             $data = [
                 'docNumber' => $docNumber,
+                'qrCode' => $qrCode,
                 'employee_name' => $request->employee_name,
                 'position' => $request->position,
                 'department' => $request->department,
@@ -930,9 +941,14 @@ class DocumentController extends Controller
 
             $docNumber = $this->generateDocumentNumber($docType);
 
+            // Generate QR Code URL untuk validasi
+            $validationUrl = url('/validate/' . urlencode($docNumber));
+            $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
+
             // Prepare data
             $data = [
                 'docNumber' => $docNumber,
+                'qrCode' => $qrCode,
                 'director_name' => $request->director_name,
                 'director_phone' => $request->director_phone,
                 'director_email' => $request->director_email,
@@ -1065,9 +1081,14 @@ class DocumentController extends Controller
 
             $docNumber = $this->generateDocumentNumber($docType);
 
+            // Generate QR Code URL untuk validasi
+            $validationUrl = url('/validate/' . urlencode($docNumber));
+            $qrCode = base64_encode(QrCode::format('svg')->size(150)->generate($validationUrl));
+
             // Prepare data
             $data = [
                 'docNumber' => $docNumber,
+                'qrCode' => $qrCode,
                 'borrower_name' => $request->borrower_name,
                 'borrower_business' => $request->borrower_business,
                 'borrower_id' => $request->borrower_id,
@@ -1138,6 +1159,46 @@ class DocumentController extends Controller
                 $currentMonth,
                 $currentYear
             );
+        }
+    }
+
+    /**
+     * Public: Validasi Dokumen via QR Code
+     */
+    public function validateDocument($docNumber)
+    {
+        try {
+            // Decode jika nomor dokumen di-encode
+            $docNumber = urldecode($docNumber);
+
+            // Cari dokumen berdasarkan nomor
+            $document = Document::where('doc_number', $docNumber)
+                ->with(['documentType', 'creator'])
+                ->first();
+
+            if (!$document) {
+                return view('documents.validate', [
+                    'valid' => false,
+                    'message' => 'Dokumen tidak ditemukan',
+                    'docNumber' => $docNumber
+                ]);
+            }
+
+            // Dokumen valid
+            return view('documents.validate', [
+                'valid' => true,
+                'document' => $document,
+                'docNumber' => $docNumber
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error validating document: ' . $e->getMessage());
+
+            return view('documents.validate', [
+                'valid' => false,
+                'message' => 'Terjadi kesalahan saat validasi',
+                'docNumber' => $docNumber ?? 'N/A'
+            ]);
         }
     }
 }

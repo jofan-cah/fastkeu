@@ -156,6 +156,27 @@
         .signature .title-position {
             margin-top: 3px;
         }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .qr-section img {
+            width: 100px;
+            height: 100px;
+            display: block;
+            margin: 0 auto 8px auto;
+        }
+
+        .qr-section .qr-label {
+            font-size: 8pt;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -268,7 +289,7 @@
             <div class="position">PT. Jaringan FiberOne Indonesia</div>
             <div class="company">Administrasi</div>
             <div class="sign-space">
-                <img src="{{ public_path('images/ttd_ayum.png') }}" alt="TTD">
+               <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
             </div>
             <div class="name">Ayu Mutiara A.</div>
         </div>

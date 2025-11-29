@@ -181,6 +181,27 @@
             font-size: 8pt;
             margin-top: 2px;
         }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+        }
+
+        .qr-section img {
+            width: 80px;
+            height: 80px;
+            display: block;
+            margin: 0 auto 5px auto;
+        }
+
+        .qr-section .qr-label {
+            font-size: 7pt;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -312,9 +333,7 @@
                 <div class="title">PIHAK PERTAMA</div>
                 <div class="company">PT. JARINGAN FIBERONE INDONESIA</div>
                 <div class="sign-space">
-                    @if(isset($pihakPertama['ttd_path']) && $pihakPertama['ttd_path'])
-                    <img src="{{ public_path($pihakPertama['ttd_path']) }}" alt="TTD">
-                    @endif
+                      <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code">
                 </div>
                 <div class="name">{{ $pihakPertama['nama'] }}</div>
                 <div class="position">{{ $pihakPertama['jabatan'] }}</div>
@@ -328,7 +347,7 @@
                 <div class="position">{{ $pihakKedua['id_pelanggan'] }}</div>
             </div>
         </div>
-
+        
     </div>
 
 </body>
