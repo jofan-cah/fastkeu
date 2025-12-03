@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | BEFAST API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for BEFAST external API integration
+    |
+    */
+    'befast' => [
+        'base_url' => env('BEFAST_API_URL', 'http://localhost:8000'),
+        'api_token' => env('BEFAST_API_TOKEN', ''),
+        'timeout' => env('BEFAST_API_TIMEOUT', 30),
+    ],
+
 ];

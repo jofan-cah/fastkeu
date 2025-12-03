@@ -3,6 +3,27 @@
 @section('title', 'Generate BA Kesepakatan Perubahan Layanan')
 @section('subtitle', 'Create Berita Acara Kesepakatan Perubahan Layanan')
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px;
+            padding-left: 16px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="max-w-5xl mx-auto">
 
@@ -38,15 +59,27 @@
                         <i class='bx bx-user'></i> Data Pelanggan (Pihak Kedua)
                     </h3>
 
+                    <div class="grid grid-cols-1 gap-4 mb-4">
+                        <!-- Pilih Subscription -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Pilih Subscription <span class="text-red-500">*</span>
+                            </label>
+                            <select id="subscription_id" name="subscription_id" class="w-full" required>
+                                <option value="">-- Pilih Subscription --</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Nama Pelanggan -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Nama Pelanggan <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="customer_name" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: Ady Korniawan">
+                            <input type="text" id="customer_name" name="customer_name" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari subscription">
                         </div>
 
                         <!-- ID Pelanggan -->
@@ -54,9 +87,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 ID Pelanggan <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="customer_id" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: F1KLN569">
+                            <input type="text" id="customer_id" name="customer_id" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari subscription">
                         </div>
 
                         <!-- Nomor Telepon -->
@@ -64,9 +97,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Nomor Telepon <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="customer_phone" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: +62 822-2572-9825">
+                            <input type="text" id="customer_phone" name="customer_phone" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari subscription">
                         </div>
                     </div>
                 </div>
@@ -77,15 +110,27 @@
                         <i class='bx bx-wifi'></i> Bandwidth Awal
                     </h3>
 
+                    <div class="grid grid-cols-1 gap-4 mb-4">
+                        <!-- Pilih Paket Awal -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Pilih Paket Awal <span class="text-red-500">*</span>
+                            </label>
+                            <select id="paket_awal_id" name="paket_awal_id" class="w-full" required>
+                                <option value="">-- Pilih Paket Awal --</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <!-- Jenis Layanan -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Jenis Layanan <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="bandwidth_awal_jenis" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: HEKTO">
+                            <input type="text" id="bandwidth_awal_jenis" name="bandwidth_awal_jenis" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari paket">
                         </div>
 
                         <!-- Kapasitas -->
@@ -93,9 +138,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Kapasitas <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="bandwidth_awal_kapasitas" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: 20 Mbps">
+                            <input type="text" id="bandwidth_awal_kapasitas" name="bandwidth_awal_kapasitas" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari paket">
                         </div>
 
                         <!-- Biaya -->
@@ -103,9 +148,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Biaya (Rp) <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="bandwidth_awal_biaya" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: 180000">
+                            <input type="number" id="bandwidth_awal_biaya" name="bandwidth_awal_biaya" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari paket">
                         </div>
                     </div>
                 </div>
@@ -116,15 +161,27 @@
                         <i class='bx bx-wifi-2'></i> Bandwidth Sekarang (Upgrade)
                     </h3>
 
+                    <div class="grid grid-cols-1 gap-4 mb-4">
+                        <!-- Pilih Paket Sekarang -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Pilih Paket Sekarang (Upgrade) <span class="text-red-500">*</span>
+                            </label>
+                            <select id="paket_sekarang_id" name="paket_sekarang_id" class="w-full" required>
+                                <option value="">-- Pilih Paket Sekarang --</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <!-- Jenis Layanan -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Jenis Layanan <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="bandwidth_sekarang_jenis" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: SMALL DEKA">
+                            <input type="text" id="bandwidth_sekarang_jenis" name="bandwidth_sekarang_jenis" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari paket">
                         </div>
 
                         <!-- Kapasitas -->
@@ -132,9 +189,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Kapasitas <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="bandwidth_sekarang_kapasitas" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: 20 Mbps">
+                            <input type="text" id="bandwidth_sekarang_kapasitas" name="bandwidth_sekarang_kapasitas" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari paket">
                         </div>
 
                         <!-- Biaya -->
@@ -142,9 +199,9 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">
                                 Biaya (Rp) <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="bandwidth_sekarang_biaya" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Contoh: 375000">
+                            <input type="number" id="bandwidth_sekarang_biaya" name="bandwidth_sekarang_biaya" required readonly
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Otomatis terisi dari paket">
                         </div>
                     </div>
                 </div>
@@ -191,9 +248,158 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        $(document).ready(function() {
+            // Initialize Select2 for Subscriptions
+            $('#subscription_id').select2({
+                placeholder: '-- Pilih Subscription --',
+                allowClear: true,
+                ajax: {
+                    url: '{{ route('befast.subscriptions.dropdown') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            search: params.term,
+                            limit: 50
+                        };
+                    },
+                    processResults: function(response) {
+                        if (response.success) {
+                            return {
+                                results: response.data.map(function(item) {
+                                    return {
+                                        id: item.id,
+                                        text: item.text,  // Already formatted from API: "Name (ID)"
+                                        data: item
+                                    };
+                                })
+                            };
+                        }
+                        return { results: [] };
+                    },
+                    cache: true
+                }
+            });
+
+            // Auto-fill customer data when subscription is selected
+            $('#subscription_id').on('select2:select', function(e) {
+                const data = e.params.data.data;
+                // Extract name from text format "Name (ID)"
+                let customerName = data.text || '';
+                if (customerName.includes('(')) {
+                    customerName = customerName.substring(0, customerName.lastIndexOf('(')).trim();
+                }
+                $('#customer_name').val(customerName);
+                $('#customer_id').val(data.customer_id || '');
+                $('#customer_phone').val(data.phone || '');
+            });
+
+            // Clear customer data when subscription is cleared
+            $('#subscription_id').on('select2:clear', function() {
+                $('#customer_name').val('');
+                $('#customer_id').val('');
+                $('#customer_phone').val('');
+            });
+
+            // Initialize Select2 for Paket Awal
+            $('#paket_awal_id').select2({
+                placeholder: '-- Pilih Paket Awal --',
+                allowClear: true,
+                ajax: {
+                    url: '{{ route('befast.pakets.dropdown') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            status: 'active',
+                            search: params.term
+                        };
+                    },
+                    processResults: function(response) {
+                        if (response.success) {
+                            return {
+                                results: response.data.map(function(item) {
+                                    return {
+                                        id: item.id,
+                                        text: item.nama_paket + ' - ' + item.speed,
+                                        data: item
+                                    };
+                                })
+                            };
+                        }
+                        return { results: [] };
+                    },
+                    cache: true
+                }
+            });
+
+            // Auto-fill paket awal data when selected
+            $('#paket_awal_id').on('select2:select', function(e) {
+                const data = e.params.data.data;
+                $('#bandwidth_awal_jenis').val(data.nama_paket || '');
+                $('#bandwidth_awal_kapasitas').val(data.speed || '');
+                $('#bandwidth_awal_biaya').val(data.price || '');
+            });
+
+            // Clear paket awal data when cleared
+            $('#paket_awal_id').on('select2:clear', function() {
+                $('#bandwidth_awal_jenis').val('');
+                $('#bandwidth_awal_kapasitas').val('');
+                $('#bandwidth_awal_biaya').val('');
+            });
+
+            // Initialize Select2 for Paket Sekarang
+            $('#paket_sekarang_id').select2({
+                placeholder: '-- Pilih Paket Sekarang --',
+                allowClear: true,
+                ajax: {
+                    url: '{{ route('befast.pakets.dropdown') }}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            status: 'active',
+                            search: params.term
+                        };
+                    },
+                    processResults: function(response) {
+                        if (response.success) {
+                            return {
+                                results: response.data.map(function(item) {
+                                    return {
+                                        id: item.id,
+                                        text: item.nama_paket + ' - ' + item.speed,
+                                        data: item
+                                    };
+                                })
+                            };
+                        }
+                        return { results: [] };
+                    },
+                    cache: true
+                }
+            });
+
+            // Auto-fill paket sekarang data when selected
+            $('#paket_sekarang_id').on('select2:select', function(e) {
+                const data = e.params.data.data;
+                $('#bandwidth_sekarang_jenis').val(data.nama_paket || '');
+                $('#bandwidth_sekarang_kapasitas').val(data.speed || '');
+                $('#bandwidth_sekarang_biaya').val(data.price || '');
+            });
+
+            // Clear paket sekarang data when cleared
+            $('#paket_sekarang_id').on('select2:clear', function() {
+                $('#bandwidth_sekarang_jenis').val('');
+                $('#bandwidth_sekarang_kapasitas').val('');
+                $('#bandwidth_sekarang_biaya').val('');
+            });
+        });
+
         $('#baKespakatanForm').on('submit', function(e) {
             e.preventDefault();
 

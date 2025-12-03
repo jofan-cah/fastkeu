@@ -3,6 +3,27 @@
 @section('title', 'Generate BA Peminjaman Perangkat')
 @section('subtitle', 'Create Berita Acara Peminjaman Perangkat')
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px;
+            padding-left: 16px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+@endpush
+
 @section('content')
 <div class="max-w-6xl mx-auto">
 
@@ -38,6 +59,18 @@
                     <i class='bx bx-user'></i> Data Peminjam (Pihak Kedua)
                 </h3>
 
+                <div class="grid grid-cols-1 gap-4 mb-4">
+                    <!-- Pilih Subscription -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Pilih Subscription <span class="text-red-500">*</span>
+                        </label>
+                        <select id="subscription_id" name="subscription_id" class="w-full" required>
+                            <option value="">-- Pilih Subscription --</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nama Peminjam -->
                     <div>
@@ -45,10 +78,12 @@
                             Nama Peminjam <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="borrower_name"
                                name="borrower_name"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: Agus Hariyanto">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari subscription">
                     </div>
 
                     <!-- Nama Usaha -->
@@ -57,10 +92,12 @@
                             Nama Usaha/Tempat <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="borrower_business"
                                name="borrower_business"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: Pluneng Water Park ( Umbul Pluneng Tirtomulyono )">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari subscription">
                     </div>
 
                     <!-- ID Pelanggan -->
@@ -69,10 +106,12 @@
                             ID Pelanggan <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="borrower_id"
                                name="borrower_id"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: 1925082001">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari subscription">
                     </div>
 
                     <!-- No HP -->
@@ -81,10 +120,12 @@
                             Nomor HP <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="borrower_phone"
                                name="borrower_phone"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: +62 815-7873-2349">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari subscription">
                     </div>
 
                     <!-- Alamat -->
@@ -92,11 +133,13 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Alamat Lengkap <span class="text-red-500">*</span>
                         </label>
-                        <textarea name="borrower_address"
+                        <textarea id="borrower_address"
+                                  name="borrower_address"
                                   required
+                                  readonly
                                   rows="2"
-                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                  placeholder="Contoh: Dawe, Pluneng, Kebonarum, Klaten, Jawa Tengah"></textarea>
+                                  class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                  placeholder="Otomatis terisi dari subscription"></textarea>
                     </div>
                 </div>
             </div>
@@ -179,9 +222,77 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+$(document).ready(function() {
+    // Initialize Select2 for Subscriptions
+    $('#subscription_id').select2({
+        placeholder: '-- Pilih Subscription --',
+        allowClear: true,
+        ajax: {
+            url: '{{ route('befast.subscriptions.dropdown') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    search: params.term,
+                    limit: 50
+                };
+            },
+            processResults: function(response) {
+                if (response.success) {
+                    return {
+                        results: response.data.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.text,  // Already formatted from API: "Name (ID)"
+                                data: item
+                            };
+                        })
+                    };
+                }
+                return { results: [] };
+            },
+            cache: true
+        }
+    });
+
+    // Auto-fill borrower data when subscription is selected
+    $('#subscription_id').on('select2:select', function(e) {
+        const data = e.params.data.data;
+        // Extract name from text format "Name (ID)"
+        let borrowerName = data.text || '';
+        if (borrowerName.includes('(')) {
+            borrowerName = borrowerName.substring(0, borrowerName.lastIndexOf('(')).trim();
+        }
+        $('#borrower_name').val(borrowerName);
+        $('#borrower_business').val(borrowerName);  // Use same name as business
+        $('#borrower_id').val(data.customer_id || '');
+        $('#borrower_phone').val(data.phone || '');
+        $('#borrower_address').val('');  // Not available in dropdown
+
+        // Fetch full details for address if needed
+        if (data.id) {
+            $.get('{{ url('/api/befast/subscriptions') }}/' + data.id, function(response) {
+                if (response.success && response.data) {
+                    $('#borrower_address').val(response.data.address || '');
+                }
+            });
+        }
+    });
+
+    // Clear borrower data when subscription is cleared
+    $('#subscription_id').on('select2:clear', function() {
+        $('#borrower_name').val('');
+        $('#borrower_business').val('');
+        $('#borrower_id').val('');
+        $('#borrower_phone').val('');
+        $('#borrower_address').val('');
+    });
+});
+
 let itemCounter = 0;
 
 // Add Item Row

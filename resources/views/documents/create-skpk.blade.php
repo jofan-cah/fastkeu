@@ -3,6 +3,27 @@
 @section('title', 'Generate Surat Pengalaman Kerja')
 @section('subtitle', 'Create Surat Pengalaman Kerja (SKPK)')
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px;
+            padding-left: 16px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+@endpush
+
 @section('content')
 <div class="max-w-5xl mx-auto">
 
@@ -38,6 +59,18 @@
                     <i class='bx bx-user'></i> Data Karyawan
                 </h3>
 
+                <div class="grid grid-cols-1 gap-4 mb-4">
+                    <!-- Pilih Karyawan -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Pilih Karyawan <span class="text-red-500">*</span>
+                        </label>
+                        <select id="karyawan_id" name="karyawan_id" class="w-full" required>
+                            <option value="">-- Pilih Karyawan --</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nama Karyawan -->
                     <div class="md:col-span-2">
@@ -45,10 +78,12 @@
                             Nama Lengkap Karyawan <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="employee_name"
                                name="employee_name"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: Budi Santoso">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari karyawan">
                     </div>
 
                     <!-- Jabatan -->
@@ -57,10 +92,12 @@
                             Jabatan <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="position"
                                name="position"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: Network Engineer">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari karyawan">
                     </div>
 
                     <!-- Departemen -->
@@ -69,10 +106,12 @@
                             Departemen <span class="text-red-500">*</span>
                         </label>
                         <input type="text"
+                               id="department"
                                name="department"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="Contoh: IT & Network">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="Otomatis terisi dari karyawan">
                     </div>
 
                     <!-- Tanggal Mulai -->
@@ -81,9 +120,11 @@
                             Tanggal Mulai Kerja <span class="text-red-500">*</span>
                         </label>
                         <input type="date"
+                               id="start_date"
                                name="start_date"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
                     <!-- Tanggal Selesai -->
@@ -92,9 +133,11 @@
                             Tanggal Selesai Kerja <span class="text-red-500">*</span>
                         </label>
                         <input type="date"
+                               id="end_date"
                                name="end_date"
                                required
-                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               readonly
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
             </div>
@@ -145,9 +188,80 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+$(document).ready(function() {
+    // Initialize Select2 for Karyawan
+    $('#karyawan_id').select2({
+        placeholder: '-- Pilih Karyawan --',
+        allowClear: true,
+        ajax: {
+            url: '{{ route('befast.karyawan.dropdown') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    search: params.term,
+                    employment_status: 'active',
+                    limit: 50
+                };
+            },
+            processResults: function(response) {
+                if (response.success) {
+                    return {
+                        results: response.data.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.text,  // Already formatted as "full_name (nip)"
+                                data: item
+                            };
+                        })
+                    };
+                }
+                return { results: [] };
+            },
+            cache: true
+        }
+    });
+
+    // Auto-fill karyawan data when selected
+    $('#karyawan_id').on('select2:select', function(e) {
+        const data = e.params.data.data;
+        // Extract name from text format "Name (NIP)"
+        let employeeName = data.text || '';
+        if (employeeName.includes('(')) {
+            employeeName = employeeName.substring(0, employeeName.lastIndexOf('(')).trim();
+        }
+        $('#employee_name').val(employeeName);
+        $('#position').val(data.position || '');
+        $('#department').val('');  // Not available in dropdown, will be filled from detail API
+        $('#start_date').val('');  // Not available in dropdown
+        $('#end_date').val('');    // Not available in dropdown
+
+        // Fetch full details if needed
+        if (data.id) {
+            $.get('{{ url('/api/befast/karyawan') }}/' + data.id, function(response) {
+                if (response.success && response.data) {
+                    $('#department').val(response.data.department || '');
+                    $('#start_date').val(response.data.join_date || '');
+                    $('#end_date').val(response.data.resign_date || '');
+                }
+            });
+        }
+    });
+
+    // Clear karyawan data when cleared
+    $('#karyawan_id').on('select2:clear', function() {
+        $('#employee_name').val('');
+        $('#position').val('');
+        $('#department').val('');
+        $('#start_date').val('');
+        $('#end_date').val('');
+    });
+});
+
 // Preview Document
 function previewDocument() {
     const formData = $('#skpkForm').serialize();

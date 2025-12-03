@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Helpers\DocumentNumberHelper;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BefastDataController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentTypeController;
@@ -145,6 +146,31 @@ Route::middleware('auth')->group(function () {
         Route::post('/{doc_type_id}/reset-counter', [DocumentTypeController::class, 'resetCounter'])
             ->middleware('check.permission:DocumentTypes,update')
             ->name('resetCounterDocumentTypes');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | BEFAST API Routes (Internal API untuk dropdown dari BEFAST)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('api/befast')->group(function () {
+        // Test Connection
+        Route::get('/test', [BefastDataController::class, 'testConnection'])->name('befast.test');
+
+        // Subscriptions
+        Route::get('/subscriptions/dropdown', [BefastDataController::class, 'getSubscriptionsDropdown'])->name('befast.subscriptions.dropdown');
+        Route::get('/subscriptions/{id}', [BefastDataController::class, 'getSubscription'])->name('befast.subscriptions.show');
+
+        // Pakets
+        Route::get('/pakets/dropdown', [BefastDataController::class, 'getPaketsDropdown'])->name('befast.pakets.dropdown');
+        Route::get('/pakets/{id}', [BefastDataController::class, 'getPaket'])->name('befast.pakets.show');
+
+        // Karyawan
+        Route::get('/karyawan/dropdown', [BefastDataController::class, 'getKaryawanDropdown'])->name('befast.karyawan.dropdown');
+        Route::get('/karyawan/{id}', [BefastDataController::class, 'getKaryawan'])->name('befast.karyawan.show');
+
+        // Cache Management
+        Route::post('/cache/clear', [BefastDataController::class, 'clearCache'])->name('befast.cache.clear');
     });
 });
 

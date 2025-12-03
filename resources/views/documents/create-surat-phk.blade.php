@@ -3,6 +3,27 @@
 @section('title', 'Generate Surat Pernyataan PHK')
 @section('subtitle', 'Create Surat Pernyataan Tanggung Jawab Mutlak PHK')
 
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container--default .select2-selection--single {
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px;
+            padding-left: 16px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 40px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+@endpush
+
 @section('content')
 <div class="max-w-6xl mx-auto">
 
@@ -126,6 +147,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -146,16 +168,31 @@ function addEmployee() {
                 </button>
             </div>
 
+            <div class="grid grid-cols-1 gap-4 mb-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Pilih Karyawan <span class="text-red-500">*</span>
+                    </label>
+                    <select id="karyawan-select-${employeeCounter}"
+                            class="karyawan-select w-full"
+                            data-counter="${employeeCounter}">
+                        <option value="">-- Pilih Karyawan --</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Nama Karyawan <span class="text-red-500">*</span>
                     </label>
                     <input type="text"
+                           id="employee-name-${employeeCounter}"
                            name="employees[${employeeCounter}][name]"
                            required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Contoh: Vinanda Salma Azahra">
+                           readonly
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Otomatis terisi dari karyawan">
                 </div>
 
                 <div>
@@ -163,10 +200,12 @@ function addEmployee() {
                         Noka Peserta <span class="text-red-500">*</span>
                     </label>
                     <input type="text"
+                           id="employee-noka-${employeeCounter}"
                            name="employees[${employeeCounter}][noka]"
                            required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Contoh: 1234567890">
+                           readonly
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Otomatis terisi dari karyawan">
                 </div>
 
                 <div>
@@ -174,10 +213,12 @@ function addEmployee() {
                         Nomor HP <span class="text-red-500">*</span>
                     </label>
                     <input type="text"
+                           id="employee-phone-${employeeCounter}"
                            name="employees[${employeeCounter}][phone]"
                            required
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Contoh: 085743499241">
+                           readonly
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Otomatis terisi dari karyawan">
                 </div>
 
                 <div>
@@ -185,6 +226,7 @@ function addEmployee() {
                         Alasan/Jenis PHK <span class="text-red-500">*</span>
                     </label>
                     <input type="text"
+                           id="employee-reason-${employeeCounter}"
                            name="employees[${employeeCounter}][reason]"
                            required
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -195,6 +237,69 @@ function addEmployee() {
     `;
 
     $('#employeesList').append(html);
+
+    // Initialize Select2 for the new employee row
+    initializeKaryawanSelect(employeeCounter);
+}
+
+// Initialize Select2 for Karyawan dropdown
+function initializeKaryawanSelect(counter) {
+    $(`#karyawan-select-${counter}`).select2({
+        placeholder: '-- Pilih Karyawan --',
+        allowClear: true,
+        ajax: {
+            url: '{{ route('befast.karyawan.dropdown') }}',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    search: params.term,
+                    employment_status: 'inactive',  // For PHK, we want inactive employees
+                    limit: 50
+                };
+            },
+            processResults: function(response) {
+                if (response.success) {
+                    return {
+                        results: response.data.map(function(item) {
+                            return {
+                                id: item.id,
+                                text: item.text,  // Already formatted as "full_name (nip)"
+                                data: item
+                            };
+                        })
+                    };
+                }
+                return { results: [] };
+            },
+            cache: true
+        }
+    });
+
+    // Auto-fill employee data when selected
+    $(`#karyawan-select-${counter}`).on('select2:select', function(e) {
+        const data = e.params.data.data;
+        const counter = $(this).data('counter');
+
+        // Extract name from text format "Name (NIP)"
+        let employeeName = data.text || '';
+        if (employeeName.includes('(')) {
+            employeeName = employeeName.substring(0, employeeName.lastIndexOf('(')).trim();
+        }
+
+        $(`#employee-name-${counter}`).val(employeeName);
+        $(`#employee-noka-${counter}`).val(data.nip || '');  // NIP sebagai noka
+        $(`#employee-phone-${counter}`).val(data.phone || '');
+    });
+
+    // Clear employee data when cleared
+    $(`#karyawan-select-${counter}`).on('select2:clear', function() {
+        const counter = $(this).data('counter');
+
+        $(`#employee-name-${counter}`).val('');
+        $(`#employee-noka-${counter}`).val('');
+        $(`#employee-phone-${counter}`).val('');
+    });
 }
 
 // Remove Employee Row
